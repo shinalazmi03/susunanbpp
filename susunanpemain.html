@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapangan Susunan Pemain - England</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Libraries for Export to Image and PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 800px; /* Fixed width */
+            min-width: 800px; /* Prevent shrinking */
+            /* margin: 0 auto; Removed margin auto as flexbox on body handles centering */
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: #386657; 
+            color: white;
+            padding: 20px 30px;
+        }
+
+        /* Elements hidden during PDF/Image export for a clean look */
+        .exporting .no-export {
+            display: none !important;
+        }
+        .exporting [contenteditable="true"] {
+            outline: none !important;
+            border-color: transparent !important;
+        }
+
+        .pitch-container {
+            background-color: #7b9c85; 
+            padding: 30px 20px;
+            position: relative;
+            height: 1050px; /* Fixed height for a realistic pitch ratio */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            user-select: none; /* Prevent text selection during drag */
+        }
+
+        .pitch-line {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .pitch-outline {
+            top: 20px;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            border-radius: 5px;
+        }
+
+        .halfway-line {
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            height: 0;
+            border-top-width: 2px;
+            transform: translateY(-50%);
+        }
+
+        .center-circle {
+            top: 50%;
+            left: 50%;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .center-spot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .penalty-box-top {
+            top: 20px;
+            left: 50%;
+            width: 300px;
+            height: 120px;
+            transform: translateX(-50%);
+            border-top: none;
+        }
+
+        .goal-box-top {
+            top: 20px;
+            left: 50%;
+            width: 120px;
+            height: 40px;
+            transform: translateX(-50%);
+            border-top: none;
+        }
+
+        .penalty-box-bottom {
+            bottom: 20px;
+            left: 50%;
+            width: 300px;
+            height: 120px;
+            transform: translateX(-50%);
+            border-bottom: none;
+        }
+
+        .goal-box-bottom {
+            bottom: 20px;
+            left: 50%;
+            width: 120px;
+            height: 40px;
+            transform: translateX(-50%);
+            border-bottom: none;
+        }
+
+        .penalty-arc-top {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            width: 100px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-top: none;
+            border-radius: 0 0 100px 100px;
+            transform: translateX(-50%);
+        }
+
+        .penalty-arc-bottom {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            width: 100px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-bottom: none;
+            border-radius: 100px 100px 0 0;
+            transform: translateX(-50%);
+        }
+
+        .player-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .player-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            /* Smooth animation when using dropdown, disabled during drag via JS */
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: grab;
+            touch-action: none; /* Crucial for touch dragging */
+        }
+        
+        .player-node:active {
+            cursor: grabbing;
+        }
+
+        /* Hover effect to indicate it's draggable */
+        .player-node:hover .jersey-wrapper {
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6));
+            transform: scale(1.05);
+            transition: all 0.2s;
+        }
+
+        .player-pos-label {
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.3);
+            padding: 1px 6px;
+            border-radius: 4px;
+            cursor: text;
+        }
+
+        .jersey-wrapper {
+            position: relative;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 4px 5px rgba(0,0,0,0.4));
+            transition: all 0.2s;
+        }
+
+        .jersey-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            fill: #1a2f3a; 
+            stroke: #ea580c; 
+            stroke-width: 3px;
+        }
+
+        .jersey-number {
+            position: relative;
+            z-index: 10;
+            color: white;
+            font-size: 19px;
+            font-weight: 800;
+            margin-top: 4px; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            cursor: text;
+        }
+
+        .player-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            cursor: text;
+        }
+
+        .subs-container {
+            background-color: white;
+            padding: 20px 30px;
+        }
+
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .sub-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+
+        .sub-number {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ea580c; 
+            background-color: #1a2f3a;
+            color: white;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: text;
+        }
+        
+        [contenteditable="true"]:hover {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            outline: 1px dashed rgba(255,255,255,0.5);
+        }
+
+        [contenteditable="true"]:focus {
+            background-color: rgba(255,255,255,0.9);
+            color: #333;
+            text-shadow: none;
+            outline: 2px solid #ea580c;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="export-container">
+        
+        <!-- Header -->
+        <div class="header flex justify-between items-start flex-wrap gap-4">
+            <div>
+                <h1 class="text-3xl font-bold mb-1 w-fit px-2 -ml-2" contenteditable="true">England</h1>
+                <p class="text-sm opacity-90 tracking-wide font-medium w-fit px-2 -ml-2" contenteditable="true" id="formation-text">Formasi 4-3-3 &middot; 11 pemain</p>
+            </div>
+            
+            <div class="flex flex-col gap-3 items-end no-export">
+                <!-- Formation Selector -->
+                <div class="bg-white/20 p-2 rounded-lg border border-white/30 flex items-center gap-3">
+                    <label for="formation-select" class="text-sm font-bold tracking-wide">Susunan:</label>
+                    <select id="formation-select" class="bg-white text-gray-800 text-sm font-bold rounded px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm">
+                        <option value="4-3-3">4 - 3 - 3</option>
+                        <option value="4-4-2">4 - 4 - 2</option>
+                        <option value="4-2-3-1">4 - 2 - 3 - 1</option>
+                        <option value="4-5-1">4 - 5 - 1</option>
+                        <option value="3-5-2">3 - 5 - 2</option>
+                        <option value="custom" disabled hidden id="custom-option">Custom (Digeser)</option>
+                    </select>
+                </div>
+                
+                <!-- Export Buttons -->
+                <div class="flex gap-2">
+                    <button id="btn-export-img" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        PNG
+                    </button>
+                    <button id="btn-export-pdf" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pitch Section -->
+        <div class="pitch-container" id="pitch-area">
+            <!-- Markings -->
+            <div class="pitch-line pitch-outline"></div>
+            <div class="pitch-line halfway-line"></div>
+            <div class="pitch-line center-circle"></div>
+            <div class="center-spot"></div>
+            
+            <div class="pitch-line penalty-box-top"></div>
+            <div class="pitch-line goal-box-top"></div>
+            <div class="penalty-arc-top"></div>
+
+            <div class="pitch-line penalty-box-bottom"></div>
+            <div class="pitch-line goal-box-bottom"></div>
+            <div class="penalty-arc-bottom"></div>
+
+            <!-- Players Layer -->
+            <div class="player-layer" id="players-wrapper">
+                
+                <!-- SVG definition for Jersey -->
+                <svg width="0" height="0" style="position:absolute">
+                    <defs>
+                        <g id="jersey-path">
+                            <path d="M 30,10 Q 50,22 70,10 L 95,30 L 85,45 L 80,95 L 20,95 L 15,45 L 5,30 Z" stroke-linejoin="round"/>
+                        </g>
+                    </defs>
+                </svg>
+
+                <!-- Players (Draggable) -->
+                <div class="player-node" id="player-0">
+                    <span class="player-pos-label" contenteditable="true">GK</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">11</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Andika</span>
+                </div>
+                <div class="player-node" id="player-1">
+                    <span class="player-pos-label" contenteditable="true">LB</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">7</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Putra</span>
+                </div>
+                <div class="player-node" id="player-2">
+                    <span class="player-pos-label" contenteditable="true">CB</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">8</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">J. Panjaitan</span>
+                </div>
+                <div class="player-node" id="player-3">
+                    <span class="player-pos-label" contenteditable="true">CB</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">9</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Jandri</span>
+                </div>
+                <div class="player-node" id="player-4">
+                    <span class="player-pos-label" contenteditable="true">RB</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">10</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Cristian</span>
+                </div>
+                <div class="player-node" id="player-5">
+                    <span class="player-pos-label" contenteditable="true">LM</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">3</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Paul</span>
+                </div>
+                <div class="player-node" id="player-6">
+                    <span class="player-pos-label" contenteditable="true">CM</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">4</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Yuda</span>
+                </div>
+                <div class="player-node" id="player-7">
+                    <span class="player-pos-label" contenteditable="true">CM</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">5</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Robi</span>
+                </div>
+                <div class="player-node" id="player-8">
+                    <span class="player-pos-label" contenteditable="true">RM</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">6</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Teguh</span>
+                </div>
+                <div class="player-node" id="player-9">
+                    <span class="player-pos-label" contenteditable="true">ST</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">1</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">Rendi</span>
+                </div>
+                <div class="player-node" id="player-10">
+                    <span class="player-pos-label" contenteditable="true">ST</span>
+                    <div class="jersey-wrapper">
+                        <svg class="jersey-svg" viewBox="0 0 100 100"><use href="#jersey-path"/></svg>
+                        <span class="jersey-number" contenteditable="true">2</span>
+                    </div>
+                    <span class="player-name" contenteditable="true">R. Galingging</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Substitutes Section -->
+        <div class="subs-container">
+            <h3 class="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider">Pengganti (7 Pemain)</h3>
+            <div class="sub-grid">
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">12</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Gio</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">13</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Bintang</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">14</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Setiawan</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">15</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Ryan</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">16</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Imam</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">17</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Cadangan 6</span>
+                </div>
+                <div class="sub-item">
+                    <div class="sub-number" contenteditable="true">18</div>
+                    <span class="text-sm font-medium w-full px-1" contenteditable="true">Cadangan 7</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Database formasi (Preset positions)
+        const formationsData = {
+            "4-3-3": [
+                { id: 0, label: "GK", top: "88%", left: "50%" },
+                { id: 1, label: "LB", top: "70%", left: "15%" },
+                { id: 2, label: "CB", top: "72%", left: "38%" },
+                { id: 3, label: "CB", top: "72%", left: "62%" },
+                { id: 4, label: "RB", top: "70%", left: "85%" },
+                { id: 5, label: "LM", top: "48%", left: "20%" },
+                { id: 6, label: "CM", top: "50%", left: "50%" },
+                { id: 7, label: "RM", top: "48%", left: "80%" },
+                { id: 8, label: "LW", top: "25%", left: "25%" },
+                { id: 9, label: "ST", top: "22%", left: "50%" },
+                { id: 10, label: "RW", top: "25%", left: "75%" }
+            ],
+            "4-4-2": [
+                { id: 0, label: "GK", top: "88%", left: "50%" },
+                { id: 1, label: "LB", top: "72%", left: "15%" },
+                { id: 2, label: "CB", top: "75%", left: "38%" },
+                { id: 3, label: "CB", top: "75%", left: "62%" },
+                { id: 4, label: "RB", top: "72%", left: "85%" },
+                { id: 5, label: "LM", top: "48%", left: "15%" },
+                { id: 6, label: "CM", top: "50%", left: "38%" },
+                { id: 7, label: "CM", top: "50%", left: "62%" },
+                { id: 8, label: "RM", top: "48%", left: "85%" },
+                { id: 9, label: "ST", top: "22%", left: "35%" },
+                { id: 10, label: "ST", top: "22%", left: "65%" }
+            ],
+            "4-2-3-1": [
+                { id: 0, label: "GK", top: "88%", left: "50%" },
+                { id: 1, label: "LB", top: "72%", left: "15%" },
+                { id: 2, label: "CB", top: "75%", left: "38%" },
+                { id: 3, label: "CB", top: "75%", left: "62%" },
+                { id: 4, label: "RB", top: "72%", left: "85%" },
+                { id: 5, label: "CDM", top: "58%", left: "38%" },
+                { id: 6, label: "CDM", top: "58%", left: "62%" },
+                { id: 7, label: "LW", top: "38%", left: "20%" },
+                { id: 8, label: "CAM", top: "42%", left: "50%" },
+                { id: 9, label: "RW", top: "38%", left: "80%" },
+                { id: 10, label: "ST", top: "18%", left: "50%" }
+            ],
+            "4-5-1": [
+                { id: 0, label: "GK", top: "88%", left: "50%" },
+                { id: 1, label: "LB", top: "72%", left: "15%" },
+                { id: 2, label: "CB", top: "75%", left: "38%" },
+                { id: 3, label: "CB", top: "75%", left: "62%" },
+                { id: 4, label: "RB", top: "72%", left: "85%" },
+                { id: 5, label: "LM", top: "48%", left: "15%" },
+                { id: 6, label: "CM", top: "52%", left: "35%" },
+                { id: 7, label: "CM", top: "52%", left: "65%" },
+                { id: 8, label: "RM", top: "48%", left: "85%" },
+                { id: 9, label: "CAM", top: "42%", left: "50%" },
+                { id: 10, label: "ST", top: "18%", left: "50%" }
+            ],
+            "3-5-2": [
+                { id: 0, label: "GK", top: "88%", left: "50%" },
+                { id: 1, label: "CB", top: "75%", left: "25%" },
+                { id: 2, label: "CB", top: "76%", left: "50%" },
+                { id: 3, label: "CB", top: "75%", left: "75%" },
+                { id: 4, label: "LWB", top: "52%", left: "15%" },
+                { id: 5, label: "CM", top: "56%", left: "35%" },
+                { id: 6, label: "CDM", top: "60%", left: "50%" },
+                { id: 7, label: "CM", top: "56%", left: "65%" },
+                { id: 8, label: "RWB", top: "52%", left: "85%" },
+                { id: 9, label: "ST", top: "25%", left: "35%" },
+                { id: 10, label: "ST", top: "25%", left: "65%" }
+            ]
+        };
+
+        const formationSelect = document.getElementById('formation-select');
+        const formationText = document.getElementById('formation-text');
+        const customOption = document.getElementById('custom-option');
+
+        // Function to apply preset formations
+        function applyFormation(formationKey) {
+            const layout = formationsData[formationKey];
+            if (!layout) return;
+
+            layout.forEach(posData => {
+                const playerElement = document.getElementById(`player-${posData.id}`);
+                if (playerElement) {
+                    playerElement.style.transition = 'top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    playerElement.style.top = posData.top;
+                    playerElement.style.left = posData.left;
+                    
+                    const labelElement = playerElement.querySelector('.player-pos-label');
+                    if(labelElement) {
+                        labelElement.innerText = posData.label;
+                    }
+                }
+            });
+            formationText.innerText = `Formasi ${formationKey} · 11 pemain`;
+        }
+
+        formationSelect.addEventListener('change', function(e) {
+            applyFormation(e.target.value);
+        });
+
+        // Initialize default formation
+        window.onload = () => applyFormation('4-3-3');
+
+        let isDragging = false;
+        let currentDraggable = null;
+        let startX, startY, initialLeft, initialTop;
+
+        const players = document.querySelectorAll('.player-node');
+        const pitchArea = document.getElementById('pitch-area');
+
+        players.forEach(player => {
+            player.addEventListener('mousedown', dragStart);
+            player.addEventListener('touchstart', dragStart, {passive: false});
+        });
+
+        function dragStart(e) {
+            // Prevent dragging if the user is clicking on text to edit it
+            if (e.target.closest('[contenteditable="true"]')) return;
+            
+            isDragging = true;
+            currentDraggable = this;
+            
+            // Disable transition for instantaneous dragging
+            this.style.transition = 'none';
+            this.style.zIndex = '50'; // Bring to front while dragging
+
+            let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            let clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+
+            startX = clientX;
+            startY = clientY;
+
+            // Calculate current exact pixel position relative to the pitch container
+            const rect = this.getBoundingClientRect();
+            const parentRect = pitchArea.getBoundingClientRect();
+            
+            initialLeft = rect.left - parentRect.left + (rect.width / 2);
+            initialTop = rect.top - parentRect.top + (rect.height / 2);
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, {passive: false});
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('touchend', dragEnd);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevent scrolling on touch devices
+
+            let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            let clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+
+            let dx = clientX - startX;
+            let dy = clientY - startY;
+
+            let newLeft = initialLeft + dx;
+            let newTop = initialTop + dy;
+
+            // Keep inside pitch bounds
+            newLeft = Math.max(0, Math.min(newLeft, pitchArea.offsetWidth));
+            newTop = Math.max(0, Math.min(newTop, pitchArea.offsetHeight));
+
+            // Convert back to percentages for responsiveness
+            const leftPercent = (newLeft / pitchArea.offsetWidth) * 100;
+            const topPercent = (newTop / pitchArea.offsetHeight) * 100;
+
+            currentDraggable.style.left = `${leftPercent}%`;
+            currentDraggable.style.top = `${topPercent}%`;
+        }
+
+        function dragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            if (currentDraggable) {
+                currentDraggable.style.zIndex = '';
+                currentDraggable = null;
+                
+                // Show "Custom" in dropdown to indicate user modified the formation
+                customOption.selected = true;
+                formationText.innerText = `Formasi Custom (Geser Manual) · 11 pemain`;
+            }
+
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', dragEnd);
+            document.removeEventListener('touchend', dragEnd);
+        }
+
+        const containerToExport = document.getElementById('export-container');
+        const btnExportImg = document.getElementById('btn-export-img');
+        const btnExportPdf = document.getElementById('btn-export-pdf');
+
+        // Function to toggle classes for clean export (hide UI elements)
+        const prepareForExport = async () => {
+            containerToExport.classList.add('exporting');
+            // Wait a tiny bit for the browser to apply the display:none
+            return new Promise(resolve => setTimeout(resolve, 50));
+        };
+        const restoreAfterExport = () => {
+            containerToExport.classList.remove('exporting');
+        };
+
+        // Export as PNG
+        btnExportImg.addEventListener('click', async () => {
+            await prepareForExport();
+            
+            html2canvas(containerToExport, { 
+                scale: 2, // High resolution
+                useCORS: true, 
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Susunan_Pemain.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                restoreAfterExport();
+            }).catch(err => {
+                console.error("Error generating image", err);
+                restoreAfterExport();
+            });
+        });
+
+        // Export as PDF
+        btnExportPdf.addEventListener('click', async () => {
+            await prepareForExport();
+            
+            html2canvas(containerToExport, { 
+                scale: 2, 
+                useCORS: true,
+                backgroundColor: "#ffffff" 
+            }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait, Millimeters, A4
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Calculate dimensions to fit A4 width
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                // A4 Height is ~297mm. Calculate aspect ratio height
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('Susunan_Pemain.pdf');
+                
+                restoreAfterExport();
+            }).catch(err => {
+                console.error("Error generating PDF", err);
+                restoreAfterExport();
+            });
+        });
+
+    </script>
+</body>
+</html>
