@@ -77,14 +77,30 @@
         .penalty-arc-bottom { position: absolute; bottom: calc(20px + 15%); left: 50%; width: 20%; height: 8%; border: 2px solid rgba(255, 255, 255, 0.6); border-bottom: none; border-radius: 100px 100px 0 0; transform: translateX(-50%); }
 
         .player-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
+        
         .player-node {
             position: absolute; display: flex; flex-direction: column; align-items: center;
             transform: translate(-50%, -50%); width: 80px;
             transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            cursor: grab; touch-action: none;
         }
-        .player-node:active { cursor: grabbing; }
-        .player-node:hover .jersey-wrapper { filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); transform: scale(1.05); transition: all 0.2s; }
+
+        /* === 1. STYLE KHUSUS MODE STRATEGI (GESER) === */
+        .mode-strategi [contenteditable="true"] {
+            pointer-events: none; /* Cegah keyboard muncul saat menyentuh pemain */
+            user-select: none;
+        }
+        .mode-strategi .player-node {
+            cursor: grab; 
+            touch-action: none; /* Kunci scroll layar agar geser pemain lancar di HP */
+        }
+        .mode-strategi .player-node:active { cursor: grabbing; }
+        .mode-strategi .player-node:hover .jersey-wrapper { filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); transform: scale(1.05); transition: all 0.2s; }
+
+        /* === 2. STYLE KHUSUS MODE EDIT TEKS === */
+        .mode-edit .player-node {
+            cursor: default;
+            touch-action: auto; /* Izinkan scroll layar normal di HP */
+        }
 
         .player-pos-label { color: white; font-size: 12px; font-weight: 700; margin-bottom: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background-color: rgba(0,0,0,0.3); padding: 1px 6px; border-radius: 4px; cursor: text; }
         .jersey-wrapper { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; margin-bottom: 4px; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.4)); transition: all 0.2s; }
@@ -192,12 +208,24 @@
 
         <!-- Header -->
         <div class="header flex justify-between items-start flex-wrap gap-4">
-            <div>
+            <div class="w-full md:w-auto">
                 <h1 class="text-3xl font-bold mb-1 w-fit px-2 -ml-2 rounded" contenteditable="true" id="team-name">BPP FC</h1>
                 <p class="text-sm opacity-90 tracking-wide font-medium w-fit px-2 -ml-2 rounded" contenteditable="true" id="formation-text">Formasi 4-3-3 &middot; 11 pemain</p>
+                
+                <!-- Toggle Mode Aplikasi -->
+                <div class="bg-black/20 p-1.5 rounded-lg flex items-center gap-1 mt-4 w-fit no-export">
+                    <button id="btn-mode-edit" class="px-4 py-2 text-sm font-bold rounded bg-white text-teal-900 shadow transition-all duration-200 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Mode Edit Teks
+                    </button>
+                    <button id="btn-mode-strategi" class="px-4 py-2 text-sm font-bold rounded text-white hover:bg-white/20 transition-all duration-200 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
+                        Mode Geser / Strategi
+                    </button>
+                </div>
             </div>
             
-            <div class="flex flex-col gap-3 items-end no-export">
+            <div class="flex flex-col gap-3 items-start md:items-end w-full md:w-auto no-export">
                 <!-- Action Buttons -->
                 <div class="flex gap-2">
                     <button id="btn-save-data" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1 border border-teal-500">
@@ -594,15 +622,46 @@
 
         // Initialize App
         window.onload = () => {
-            // Coba load dari HP, kalau belum ada data tersimpan sama sekali, pakai formasi default
             const isDataLoaded = loadDataFromStorage();
             if(!isDataLoaded) {
                 applyFormation('4-3-3');
             }
+            applyAppMode('edit'); // Mode default saat dibuka
         };
 
         // Event Tombol Simpan
         document.getElementById('btn-save-data').addEventListener('click', saveDataToStorage);
+
+        // --- SISTEM 2 MODE (EDIT & STRATEGI) ---
+        let currentMode = 'edit';
+        const btnModeEdit = document.getElementById('btn-mode-edit');
+        const btnModeStrategi = document.getElementById('btn-mode-strategi');
+        
+        function applyAppMode(mode) {
+            currentMode = mode;
+            const bodyEl = document.body;
+            
+            if (mode === 'edit') {
+                btnModeEdit.classList.add('bg-white', 'text-teal-900', 'shadow');
+                btnModeEdit.classList.remove('text-white', 'hover:bg-white/20');
+                btnModeStrategi.classList.add('text-white', 'hover:bg-white/20');
+                btnModeStrategi.classList.remove('bg-white', 'text-teal-900', 'shadow');
+                
+                bodyEl.classList.add('mode-edit');
+                bodyEl.classList.remove('mode-strategi');
+            } else {
+                btnModeStrategi.classList.add('bg-white', 'text-teal-900', 'shadow');
+                btnModeStrategi.classList.remove('text-white', 'hover:bg-white/20');
+                btnModeEdit.classList.add('text-white', 'hover:bg-white/20');
+                btnModeEdit.classList.remove('bg-white', 'text-teal-900', 'shadow');
+                
+                bodyEl.classList.add('mode-strategi');
+                bodyEl.classList.remove('mode-edit');
+            }
+        }
+
+        btnModeEdit.addEventListener('click', () => applyAppMode('edit'));
+        btnModeStrategi.addEventListener('click', () => applyAppMode('strategi'));
 
 
         let isDragging = false;
@@ -616,7 +675,9 @@
         });
 
         function dragStart(e) {
-            if (e.target.closest('[contenteditable="true"]')) return;
+            // BATALKAN GESTURE GESER JIKA SEDANG DI "MODE EDIT"
+            if (currentMode === 'edit') return; 
+            
             isDragging = true;
             currentDraggable = this;
             this.style.transition = 'none';
