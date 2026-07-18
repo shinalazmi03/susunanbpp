@@ -90,18 +90,18 @@
 
         .player-pos-label { color: white; font-size: 12px; font-weight: 700; margin-bottom: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background-color: rgba(0,0,0,0.3); padding: 1px 6px; border-radius: 4px; cursor: text; }
         .jersey-wrapper { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; margin-bottom: 4px; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.4)); transition: all 0.2s; }
-        .jersey-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; fill: #1a2f3a; stroke: #ea580c; stroke-width: 3px; }
-        .jersey-number { position: relative; z-index: 10; color: white; font-size: 18px; font-weight: 800; margin-top: 4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); cursor: text; }
-        .player-name { color: white; font-size: 13px; font-weight: 600; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); cursor: text; line-height: 1.2; width: 100%; }
+        [contenteditable="true"]:focus {
+            background-color: rgba(255,255,255,0.9);
+            color: #333;
+            text-shadow: none;
+            outline: 2px solid #ea580c;
+            border-radius: 4px;
+        }
 
-        /* Substitutes */
-        .subs-container { background-color: white; padding: 20px 30px; }
-        .sub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .sub-item { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; }
-        .sub-number { width: 30px; height: 30px; border: 1px solid #ea580c; background-color: #1a2f3a; color: white; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; cursor: text; }
-        
-        [contenteditable="true"]:hover { background-color: rgba(255,255,255,0.2); border-radius: 4px; outline: 1px dashed rgba(255,255,255,0.5); }
-        [contenteditable="true"]:focus { background-color: rgba(255,255,255,0.9); color: #333; text-shadow: none; outline: 2px solid #ea580c; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body>
@@ -115,6 +115,12 @@
             </div>
             
             <div class="flex flex-col gap-3 items-end no-export">
+                <!-- Action Button Form -->
+                <button id="btn-open-edit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Isi Data Pemain
+                </button>
+
                 <!-- Formation Selector -->
                 <div class="bg-white/20 p-2 rounded-lg border border-white/30 flex items-center gap-3">
                     <label for="formation-select" class="text-sm font-bold tracking-wide">Susunan:</label>
@@ -295,6 +301,41 @@
                     <div class="sub-number" contenteditable="true">20</div>
                     <span class="text-sm font-medium w-full px-1 rounded" contenteditable="true">Dimas</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form Edit Pemain -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-xl">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Formulir Data Pemain
+                </h2>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1 rounded transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar bg-white">
+                <h3 class="font-bold text-base text-indigo-700 mb-3 border-b-2 border-indigo-100 pb-2">Starting XI (11 Pemain)</h3>
+                <div id="form-starters" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+                    <!-- Javascript will populate this -->
+                </div>
+
+                <h3 class="font-bold text-base text-orange-600 mb-3 border-b-2 border-orange-100 pb-2">Pemain Cadangan (7 Pemain)</h3>
+                <div id="form-subs" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Javascript will populate this -->
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="p-5 border-t border-gray-200 bg-gray-50 rounded-b-xl flex justify-end gap-3">
+                <button id="btn-cancel-modal" class="px-5 py-2 rounded font-semibold text-gray-600 hover:bg-gray-200 transition-colors">Batal</button>
+                <button id="btn-save-modal" class="px-5 py-2 rounded font-semibold text-white bg-green-600 hover:bg-green-700 shadow transition-colors">Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -497,6 +538,99 @@
                     restoreAfterExport();
                 })
                 .catch(() => restoreAfterExport());
+        });
+
+        // --- Logika Form Edit Pemain (Modal) ---
+        const modal = document.getElementById('edit-modal');
+        const btnOpenEdit = document.getElementById('btn-open-edit');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const btnCancelModal = document.getElementById('btn-cancel-modal');
+        const btnSaveModal = document.getElementById('btn-save-modal');
+        const formStarters = document.getElementById('form-starters');
+        const formSubs = document.getElementById('form-subs');
+
+        // Fungsi membuat elemen input form untuk tiap pemain
+        function createInputGroup(id, type, pos, num, name) {
+            // Jika pemain cadangan, sembunyikan input posisi agar UI lebih rapi
+            const posHtml = type === 'starter' ? `
+                <div class="w-16">
+                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Pos</label>
+                    <input type="text" id="${type}-pos-${id}" value="${pos}" class="w-full bg-white border border-gray-300 rounded px-2 py-1.5 text-sm font-semibold focus:outline-none focus:border-indigo-500 uppercase">
+                </div>
+            ` : `<input type="hidden" id="${type}-pos-${id}" value="${pos}">`;
+
+            return `
+                <div class="flex gap-2 items-center bg-gray-50 p-2.5 rounded border border-gray-200 focus-within:border-indigo-400 focus-within:bg-indigo-50/50 transition-colors shadow-sm">
+                    ${posHtml}
+                    <div class="w-14">
+                        <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">No</label>
+                        <input type="text" id="${type}-num-${id}" value="${num}" class="w-full bg-white border border-gray-300 rounded px-2 py-1.5 text-sm font-bold text-center focus:outline-none focus:border-indigo-500" maxlength="3">
+                    </div>
+                    <div class="flex-1">
+                        <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Nama Pemain</label>
+                        <input type="text" id="${type}-name-${id}" value="${name}" class="w-full bg-white border border-gray-300 rounded px-2 py-1.5 text-sm font-medium focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+            `;
+        }
+
+        // Buka Modal & Ambil data yang ada di lapangan
+        btnOpenEdit.addEventListener('click', () => {
+            formStarters.innerHTML = '';
+            formSubs.innerHTML = '';
+
+            // Ambil 11 Pemain Inti
+            document.querySelectorAll('.player-node').forEach((node, index) => {
+                const pos = node.querySelector('.player-pos-label').innerText;
+                const num = node.querySelector('.jersey-number').innerText;
+                const name = node.querySelector('.player-name').innerText;
+                formStarters.innerHTML += createInputGroup(index, 'starter', pos, num, name);
+            });
+
+            // Ambil Pemain Cadangan
+            document.querySelectorAll('.sub-item').forEach((node, index) => {
+                const num = node.querySelector('.sub-number').innerText;
+                const name = node.querySelector('span').innerText;
+                formSubs.innerHTML += createInputGroup(index, 'sub', 'SUB', num, name);
+            });
+
+            // Tampilkan modal dan kunci scroll latar belakang
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
+        });
+
+        // Fungsi tutup modal
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Kembalikan scroll
+        };
+
+        btnCloseModal.addEventListener('click', closeModal);
+        btnCancelModal.addEventListener('click', closeModal);
+
+        // Simpan Data dari Formulir ke Lapangan
+        btnSaveModal.addEventListener('click', () => {
+            // Update 11 Pemain Inti
+            document.querySelectorAll('.player-node').forEach((node, index) => {
+                const posInput = document.getElementById(`starter-pos-${index}`).value;
+                const numInput = document.getElementById(`starter-num-${index}`).value;
+                const nameInput = document.getElementById(`starter-name-${index}`).value;
+                
+                node.querySelector('.player-pos-label').innerText = posInput;
+                node.querySelector('.jersey-number').innerText = numInput;
+                node.querySelector('.player-name').innerText = nameInput;
+            });
+
+            // Update Pemain Cadangan
+            document.querySelectorAll('.sub-item').forEach((node, index) => {
+                const numInput = document.getElementById(`sub-num-${index}`).value;
+                const nameInput = document.getElementById(`sub-name-${index}`).value;
+                
+                node.querySelector('.sub-number').innerText = numInput;
+                node.querySelector('span').innerText = nameInput;
+            });
+
+            closeModal();
         });
     </script>
 </body>
