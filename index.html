@@ -207,60 +207,71 @@
         </div>
 
         <!-- Header -->
-        <div class="header flex justify-between items-start flex-wrap gap-4">
-            <div class="w-full md:w-auto">
-                <h1 class="text-3xl font-bold mb-1 w-fit px-2 -ml-2 rounded" contenteditable="true" id="team-name">BPP FC</h1>
-                <p class="text-sm opacity-90 tracking-wide font-medium w-fit px-2 -ml-2 rounded" contenteditable="true" id="formation-text">Formasi 4-3-3 &middot; 11 pemain</p>
-                
-                <!-- Toggle Mode Aplikasi -->
-                <div class="bg-black/20 p-1.5 rounded-lg flex items-center gap-1 mt-4 w-fit no-export">
-                    <button id="btn-mode-edit" class="px-4 py-2 text-sm font-bold rounded bg-white text-teal-900 shadow transition-all duration-200 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Mode Edit Teks
-                    </button>
-                    <button id="btn-mode-strategi" class="px-4 py-2 text-sm font-bold rounded text-white hover:bg-white/20 transition-all duration-200 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
-                        Mode Geser / Strategi
-                    </button>
+        <div class="header flex flex-col gap-4">
+            <!-- Baris Atas: Judul & Navigasi Utama -->
+            <div class="flex justify-between items-center flex-wrap gap-4 border-b border-white/20 pb-4">
+                <!-- Kiri: Judul Tim -->
+                <div>
+                    <h1 class="text-3xl font-bold mb-1 w-fit px-2 -ml-2 rounded" contenteditable="true" id="team-name">BPP FC</h1>
+                    <p class="text-sm opacity-90 tracking-wide font-medium w-fit px-2 -ml-2 rounded" contenteditable="true" id="formation-text">Formasi 4-3-3 &middot; 11 pemain</p>
                 </div>
-            </div>
-            
-            <div class="flex flex-col gap-3 items-start md:items-end w-full md:w-auto no-export">
-                <!-- Action Buttons -->
-                <div class="flex gap-2">
-                    <button id="btn-save-data" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1 border border-teal-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                        Simpan
-                    </button>
-                    <button id="btn-open-edit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
+                
+                <!-- Kanan: Navigasi Aksi (Isi Data, Simpan, Susunan Pemain) -->
+                <div class="flex flex-wrap gap-2 no-export w-full md:w-auto">
+                    <button id="btn-open-edit" class="flex-1 md:flex-none justify-center bg-white text-teal-900 hover:bg-gray-100 text-sm font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         Isi Data Pemain
                     </button>
+                    <button id="btn-open-cloud-save" class="flex-1 md:flex-none justify-center bg-teal-500 hover:bg-teal-400 text-white text-sm font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        Simpan
+                    </button>
+                    <button id="btn-open-cloud-load" class="flex-1 md:flex-none justify-center bg-teal-800 hover:bg-teal-700 text-white text-sm font-bold py-2 px-4 rounded shadow transition-colors flex items-center gap-2 border border-teal-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Susunan Pemain
+                    </button>
+                </div>
+            </div>
+
+            <!-- Baris Bawah: Mode, Formasi & Export -->
+            <div class="flex justify-between items-center flex-wrap gap-4 no-export">
+                <!-- Kiri: Toggle Mode Aplikasi -->
+                <div class="bg-black/20 p-1 rounded-lg flex items-center w-full md:w-auto">
+                    <button id="btn-mode-edit" class="flex-1 px-3 py-1.5 text-xs md:text-sm font-bold rounded bg-white text-teal-900 shadow transition-all duration-200 flex justify-center items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Mode Edit
+                    </button>
+                    <button id="btn-mode-strategi" class="flex-1 px-3 py-1.5 text-xs md:text-sm font-bold rounded text-white hover:bg-white/20 transition-all duration-200 flex justify-center items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
+                        Mode Strategi
+                    </button>
                 </div>
 
-                <!-- Formation Selector -->
-                <div class="bg-white/20 p-2 rounded-lg border border-white/30 flex items-center gap-3">
-                    <label for="formation-select" class="text-sm font-bold tracking-wide">Susunan:</label>
-                    <select id="formation-select" class="bg-white text-gray-800 text-sm font-bold rounded px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm">
-                        <option value="4-3-3">4 - 3 - 3</option>
-                        <option value="4-4-2">4 - 4 - 2</option>
-                        <option value="4-2-3-1">4 - 2 - 3 - 1</option>
-                        <option value="4-5-1">4 - 5 - 1</option>
-                        <option value="3-5-2">3 - 5 - 2</option>
-                        <option value="custom" disabled hidden id="custom-option">Custom (Digeser)</option>
-                    </select>
-                </div>
-                
-                <!-- Export Buttons -->
-                <div class="flex gap-2">
-                    <button id="btn-export-img" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        PNG
-                    </button>
-                    <button id="btn-export-pdf" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        PDF
-                    </button>
+                <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-3">
+                    <!-- Tengah: Formation Selector -->
+                    <div class="bg-white/20 p-1.5 rounded-lg border border-white/30 flex items-center gap-2 flex-1 md:flex-none justify-center">
+                        <label for="formation-select" class="text-xs font-bold tracking-wide">Formasi:</label>
+                        <select id="formation-select" class="bg-white text-gray-800 text-xs font-bold rounded px-2 py-1 focus:outline-none cursor-pointer shadow-sm">
+                            <option value="4-3-3">4-3-3</option>
+                            <option value="4-4-2">4-4-2</option>
+                            <option value="4-2-3-1">4-2-3-1</option>
+                            <option value="4-5-1">4-5-1</option>
+                            <option value="3-5-2">3-5-2</option>
+                            <option value="custom" disabled hidden id="custom-option">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Kanan: Export Buttons -->
+                    <div class="flex gap-2">
+                        <button id="btn-export-img" class="bg-gray-100 hover:bg-white text-teal-900 text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            PNG
+                        </button>
+                        <button id="btn-export-pdf" class="bg-gray-100 hover:bg-white text-teal-900 text-xs font-bold py-2 px-3 rounded shadow transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            PDF
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -453,8 +464,74 @@
         </div>
     </div>
 
-    <script>
-        // Database formasi (Preset positions)
+    <!-- Modal Simpan ke Cloud -->
+    <div id="modal-cloud-save" class="hidden fixed inset-0 bg-black/60 z-[200] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-blue-50">
+                <h2 class="text-lg font-bold text-blue-800">Simpan Susunan Online</h2>
+            </div>
+            <div class="p-5">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Nama Versi Susunan</label>
+                <input type="text" id="input-cloud-name" placeholder="Contoh: Formasi Lawan Persija (Babak 1)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <p class="text-xs text-gray-500 mt-2 font-medium">Data ini akan tersimpan di internet dan otomatis bisa dilihat/dimuat oleh temanmu yang membuka web ini.</p>
+            </div>
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-2">
+                <button id="btn-cancel-cloud-save" class="px-4 py-2 rounded text-sm font-semibold text-gray-600 hover:bg-gray-200 transition-colors">Batal</button>
+                <button id="btn-confirm-cloud-save" class="px-4 py-2 rounded text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow transition-colors flex items-center gap-1">
+                    Simpan Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Muat dari Cloud -->
+    <div id="modal-cloud-load" class="hidden fixed inset-0 bg-black/60 z-[200] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-fuchsia-50 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-fuchsia-800">Daftar Susunan Tersimpan</h2>
+                <button id="btn-close-cloud-load" class="text-gray-400 hover:text-red-500 p-1 rounded transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto custom-scrollbar bg-gray-50/50" id="cloud-list-container">
+                <div class="flex justify-center items-center h-20 text-gray-500 text-sm font-medium">Memuat data dari server...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KITA GANTI SCRIPT MENJADI TYPE MODULE AGAR DATABASE CLOUD (FIREBASE) BISA BERJALAN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db, auth, currentUser = null;
+        let isCloudReady = false;
+
+        async function initCloud() {
+            try {
+                if (typeof __app_id === 'undefined' || typeof __firebase_config === 'undefined') {
+                    console.log("Menjalankan versi tanpa cloud.");
+                    return;
+                }
+                const app = initializeApp(JSON.parse(__firebase_config));
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+                isCloudReady = true;
+            } catch (e) {
+                console.error("Gagal menyambung ke Cloud:", e);
+            }
+        }
+        initCloud(); // Mulai koneksi database diam-diam saat web dibuka
+
         const formationsData = {
             "4-3-3": [
                 { id: 0, label: "GK", top: "88%", left: "50%" },
@@ -527,8 +604,8 @@
         const formationText = document.getElementById('formation-text');
         const customOption = document.getElementById('custom-option');
         const LOCAL_STORAGE_KEY = 'susunanPemainBPPFC';
+        let savedCloudLineups = []; // Simpan memory data cloud
 
-        // Apply selected formation
         function applyFormation(formationKey) {
             const layout = formationsData[formationKey];
             if (!layout) return;
@@ -549,7 +626,7 @@
 
         formationSelect.addEventListener('change', e => applyFormation(e.target.value));
 
-        function saveDataToStorage() {
+        function getLayoutDataObject() {
             const dataToSave = {
                 teamName: document.getElementById('team-name').innerText,
                 formationText: formationText.innerText,
@@ -557,8 +634,6 @@
                 players: [],
                 subs: []
             };
-
-            // Save starters
             document.querySelectorAll('.player-node').forEach(node => {
                 dataToSave.players.push({
                     pos: node.querySelector('.player-pos-label').innerText,
@@ -568,71 +643,189 @@
                     left: node.style.left
                 });
             });
-
-            // Save subs
             document.querySelectorAll('.sub-item').forEach(node => {
                 dataToSave.subs.push({
                     num: node.querySelector('.sub-number').innerText,
                     name: node.querySelector('span').innerText
                 });
             });
+            return dataToSave;
+        }
 
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
-            
-            // Show toast notification
+        function applyLayoutDataObject(savedData) {
+            document.getElementById('team-name').innerText = savedData.teamName || 'BPP FC';
+            formationText.innerText = savedData.formationText;
+            formationSelect.value = savedData.formationValue;
+
+            document.querySelectorAll('.player-node').forEach((node, idx) => {
+                if(savedData.players[idx]) {
+                    const p = savedData.players[idx];
+                    node.querySelector('.player-pos-label').innerText = p.pos;
+                    node.querySelector('.jersey-number').innerText = p.num;
+                    node.querySelector('.player-name').innerText = p.name;
+                    if(p.top) node.style.top = p.top;
+                    if(p.left) node.style.left = p.left;
+                }
+            });
+
+            document.querySelectorAll('.sub-item').forEach((node, idx) => {
+                if(savedData.subs[idx]) {
+                    node.querySelector('.sub-number').innerText = savedData.subs[idx].num;
+                    node.querySelector('span').innerText = savedData.subs[idx].name;
+                }
+            });
+        }
+
+        function showToast(msg, isError = false) {
             const toast = document.getElementById('toast-save');
+            toast.innerText = msg;
+            toast.classList.remove('bg-green-600', 'bg-red-600');
+            toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
             toast.classList.remove('opacity-0');
-            setTimeout(() => { toast.classList.add('opacity-0'); }, 3000);
+            setTimeout(() => { toast.classList.add('opacity-0'); }, 3500);
+        }
+
+        function saveDataToStorage() {
+            const dataToSave = getLayoutDataObject();
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
+            showToast("✅ Susunan Sementara Disimpan!");
         }
 
         function loadDataFromStorage() {
             const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (!savedStr) return false; // Return false if no save data exists
-
+            if (!savedStr) return false;
             try {
-                const savedData = JSON.parse(savedStr);
-                
-                document.getElementById('team-name').innerText = savedData.teamName || 'BPP FC';
-                formationText.innerText = savedData.formationText;
-                formationSelect.value = savedData.formationValue;
-
-                document.querySelectorAll('.player-node').forEach((node, idx) => {
-                    if(savedData.players[idx]) {
-                        const p = savedData.players[idx];
-                        node.querySelector('.player-pos-label').innerText = p.pos;
-                        node.querySelector('.jersey-number').innerText = p.num;
-                        node.querySelector('.player-name').innerText = p.name;
-                        if(p.top) node.style.top = p.top;
-                        if(p.left) node.style.left = p.left;
-                    }
-                });
-
-                document.querySelectorAll('.sub-item').forEach((node, idx) => {
-                    if(savedData.subs[idx]) {
-                        node.querySelector('.sub-number').innerText = savedData.subs[idx].num;
-                        node.querySelector('span').innerText = savedData.subs[idx].name;
-                    }
-                });
+                applyLayoutDataObject(JSON.parse(savedStr));
                 return true;
-            } catch (e) {
-                console.error("Gagal memuat data", e);
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
-        // Initialize App
+        
+        // MODAL SIMPAN CLOUD
+        const modalCloudSave = document.getElementById('modal-cloud-save');
+        document.getElementById('btn-open-cloud-save').addEventListener('click', () => {
+            if(!isCloudReady) {
+                showToast("Koneksi internet bermasalah / Sedang offline.", true);
+                return;
+            }
+            document.getElementById('input-cloud-name').value = '';
+            modalCloudSave.classList.remove('hidden');
+        });
+        document.getElementById('btn-cancel-cloud-save').addEventListener('click', () => {
+            modalCloudSave.classList.add('hidden');
+        });
+        
+        document.getElementById('btn-confirm-cloud-save').addEventListener('click', async () => {
+            const versionName = document.getElementById('input-cloud-name').value.trim();
+            if(!versionName) {
+                showToast("Nama susunan tidak boleh kosong!", true); return;
+            }
+            if(!currentUser) {
+                showToast("Belum terhubung ke server database, harap tunggu.", true); return;
+            }
+
+            const btn = document.getElementById('btn-confirm-cloud-save');
+            btn.innerText = "Menyimpan..."; btn.disabled = true;
+
+            try {
+                const data = getLayoutDataObject();
+                data.versionName = versionName;
+                data.timestamp = Date.now(); // Untuk urutan terbaru
+                
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const docId = crypto.randomUUID();
+                const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'lineups'), docId);
+                
+                await setDoc(docRef, data);
+                showToast(`✅ '${versionName}' Berhasil Disimpan Online!`);
+                modalCloudSave.classList.add('hidden');
+            } catch (error) {
+                console.error("Gagal simpan:", error);
+                showToast("Gagal menyimpan ke database online.", true);
+            } finally {
+                btn.innerText = "Simpan Sekarang"; btn.disabled = false;
+            }
+        });
+
+        // MODAL MUAT CLOUD
+        const modalCloudLoad = document.getElementById('modal-cloud-load');
+        const listContainer = document.getElementById('cloud-list-container');
+        
+        document.getElementById('btn-open-cloud-load').addEventListener('click', async () => {
+            if(!isCloudReady || !currentUser) {
+                showToast("Koneksi Database Offline.", true);
+                return;
+            }
+            modalCloudLoad.classList.remove('hidden');
+            listContainer.innerHTML = '<div class="flex justify-center items-center h-32 text-gray-500 font-medium"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-fuchsia-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengambil Data dari Server...</div>';
+
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const collRef = collection(db, 'artifacts', appId, 'public', 'data', 'lineups');
+                const snapshot = await getDocs(collRef);
+                
+                savedCloudLineups = [];
+                snapshot.forEach(doc => savedCloudLineups.push({ id: doc.id, ...doc.data() }));
+                
+                // Urutkan dari yang terbaru disimpan
+                savedCloudLineups.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                if (savedCloudLineups.length === 0) {
+                    listContainer.innerHTML = '<div class="flex flex-col justify-center items-center h-32 text-gray-500"><svg class="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><p>Belum ada susunan pemain yang tersimpan.</p></div>';
+                    return;
+                }
+
+                listContainer.innerHTML = '<div class="flex flex-col gap-2"></div>';
+                const wrapper = listContainer.querySelector('div');
+                
+                savedCloudLineups.forEach(item => {
+                    const date = item.timestamp ? new Date(item.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}) : 'Baru saja';
+                    const div = document.createElement('div');
+                    div.className = 'bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex justify-between items-center hover:border-fuchsia-300 transition-colors';
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-4">
+                            <h3 class="font-bold text-gray-800 text-sm truncate">${item.versionName}</h3>
+                            <p class="text-xs text-gray-500 font-medium truncate">${item.teamName} &bull; ${date}</p>
+                        </div>
+                        <button class="btn-pilih-cloud bg-fuchsia-100 hover:bg-fuchsia-600 hover:text-white text-fuchsia-700 px-3 py-1.5 rounded text-xs font-bold transition-colors shadow-sm" data-id="${item.id}">
+                            Pilih
+                        </button>
+                    `;
+                    wrapper.appendChild(div);
+                });
+
+                // Tambahkan event ke setiap tombol Pilih
+                document.querySelectorAll('.btn-pilih-cloud').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const targetId = e.target.getAttribute('data-id');
+                        const selectedData = savedCloudLineups.find(i => i.id === targetId);
+                        if (selectedData) {
+                            applyLayoutDataObject(selectedData);
+                            saveDataToStorage(); // Update memori lokal
+                            modalCloudLoad.classList.add('hidden');
+                            showToast(`✅ Berhasil memuat susunan: ${selectedData.versionName}`);
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error("Gagal muat:", error);
+                listContainer.innerHTML = '<div class="text-center text-red-500 font-bold p-4">Gagal mengambil data dari server. Coba lagi nanti.</div>';
+            }
+        });
+
+        document.getElementById('btn-close-cloud-load').addEventListener('click', () => {
+            modalCloudLoad.classList.add('hidden');
+        });
+
         window.onload = () => {
             const isDataLoaded = loadDataFromStorage();
-            if(!isDataLoaded) {
-                applyFormation('4-3-3');
-            }
-            applyAppMode('edit'); // Mode default saat dibuka
+            if(!isDataLoaded) { applyFormation('4-3-3'); }
+            applyAppMode('edit'); 
         };
 
-        // Event Tombol Simpan
-        document.getElementById('btn-save-data').addEventListener('click', saveDataToStorage);
+        // BARIS btn-save-data DIHAPUS DARI SINI
 
-        // --- SISTEM 2 MODE (EDIT & STRATEGI) ---
         let currentMode = 'edit';
         const btnModeEdit = document.getElementById('btn-mode-edit');
         const btnModeStrategi = document.getElementById('btn-mode-strategi');
@@ -663,7 +856,6 @@
         btnModeEdit.addEventListener('click', () => applyAppMode('edit'));
         btnModeStrategi.addEventListener('click', () => applyAppMode('strategi'));
 
-
         let isDragging = false;
         let currentDraggable = null;
         let startX, startY, initialLeft, initialTop;
@@ -675,7 +867,6 @@
         });
 
         function dragStart(e) {
-            // BATALKAN GESTURE GESER JIKA SEDANG DI "MODE EDIT"
             if (currentMode === 'edit') return; 
             
             isDragging = true;
@@ -732,17 +923,14 @@
 
         const containerToExport = document.getElementById('export-container');
         
-        // Mematikan sementara atribut `contenteditable` agar teks tidak miring/rusak saat di render html2canvas
         const prepareForExport = async () => {
-            window.scrollTo(0, 0); // Reset scroll position to avoid html2canvas clipping bugs
+            window.scrollTo(0, 0); 
             containerToExport.classList.add('exporting');
-            
             document.querySelectorAll('[contenteditable="true"]').forEach(el => {
                 el.setAttribute('data-editable', 'true');
                 el.setAttribute('contenteditable', 'false');
             });
-
-            return new Promise(resolve => setTimeout(resolve, 150)); // Tunggu DOM update
+            return new Promise(resolve => setTimeout(resolve, 150)); 
         };
 
         const restoreAfterExport = () => {
@@ -763,10 +951,7 @@
                     link.click();
                     restoreAfterExport();
                 })
-                .catch(err => {
-                    console.error("Export failed", err);
-                    restoreAfterExport();
-                });
+                .catch(err => { console.error("Export failed", err); restoreAfterExport(); });
         });
 
         document.getElementById('btn-export-pdf').addEventListener('click', async () => {
@@ -782,17 +967,10 @@
                     pdf.save('Susunan_Pemain_BPP_FC.pdf');
                     restoreAfterExport();
                 })
-                .catch(err => {
-                    console.error("Export failed", err);
-                    restoreAfterExport();
-                });
+                .catch(err => { console.error("Export failed", err); restoreAfterExport(); });
         });
 
-        const modal = document.getElementById('edit-modal');
-        const btnOpenEdit = document.getElementById('btn-open-edit');
-        const btnCloseModal = document.getElementById('btn-close-modal');
-        const btnCancelModal = document.getElementById('btn-cancel-modal');
-        const btnSaveModal = document.getElementById('btn-save-modal');
+        const modalEdit = document.getElementById('edit-modal');
         const formStarters = document.getElementById('form-starters');
         const formSubs = document.getElementById('form-subs');
 
@@ -819,48 +997,42 @@
             `;
         }
 
-        btnOpenEdit.addEventListener('click', () => {
+        document.getElementById('btn-open-edit').addEventListener('click', () => {
             formStarters.innerHTML = ''; formSubs.innerHTML = '';
-            
             document.querySelectorAll('.player-node').forEach((node, index) => {
                 const pos = node.querySelector('.player-pos-label').innerText;
                 const num = node.querySelector('.jersey-number').innerText;
                 const name = node.querySelector('.player-name').innerText;
                 formStarters.innerHTML += createInputGroup(index, 'starter', pos, num, name);
             });
-
             document.querySelectorAll('.sub-item').forEach((node, index) => {
                 const num = node.querySelector('.sub-number').innerText;
                 const name = node.querySelector('span').innerText;
                 formSubs.innerHTML += createInputGroup(index, 'sub', 'SUB', num, name);
             });
-
-            modal.classList.remove('hidden');
+            modalEdit.classList.remove('hidden');
             document.body.style.overflow = 'hidden'; 
         });
 
-        const closeModal = () => {
-            modal.classList.add('hidden');
+        const closeModalEdit = () => {
+            modalEdit.classList.add('hidden');
             document.body.style.overflow = 'auto';
         };
 
-        btnCloseModal.addEventListener('click', closeModal);
-        btnCancelModal.addEventListener('click', closeModal);
+        document.getElementById('btn-close-modal').addEventListener('click', closeModalEdit);
+        document.getElementById('btn-cancel-modal').addEventListener('click', closeModalEdit);
 
-        btnSaveModal.addEventListener('click', () => {
+        document.getElementById('btn-save-modal').addEventListener('click', () => {
             document.querySelectorAll('.player-node').forEach((node, index) => {
                 node.querySelector('.player-pos-label').innerText = document.getElementById(`starter-pos-${index}`).value;
                 node.querySelector('.jersey-number').innerText = document.getElementById(`starter-num-${index}`).value;
                 node.querySelector('.player-name').innerText = document.getElementById(`starter-name-${index}`).value;
             });
-
             document.querySelectorAll('.sub-item').forEach((node, index) => {
                 node.querySelector('.sub-number').innerText = document.getElementById(`sub-num-${index}`).value;
                 node.querySelector('span').innerText = document.getElementById(`sub-name-${index}`).value;
             });
-            
-            closeModal();
-            // Automatically save to local storage after form edit
+            closeModalEdit();
             saveDataToStorage(); 
         });
     </script>
